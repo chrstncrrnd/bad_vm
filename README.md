@@ -1,8 +1,14 @@
 # BAD_VM
 
-a register-based vm
+a register-based vm built in rust
 
-currently has no assembler/way to use outside of tests
+## Usage:
+
+(Make sure you have [Rust](https://www.rust-lang.org/) installed)
+
+Run a file using ```cargo run <filename>```
+
+Build a file from badvm assembly to bytecode using assembler: ```cargo run -p assembler -- <input> <output>```
 
 ### Opcodes:
 - **HALT** (0)
