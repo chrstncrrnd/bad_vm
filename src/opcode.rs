@@ -2,12 +2,12 @@
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub enum OPCode {
     HALT,
-    IGL,
     LOAD,
     ADD,
     SUB,
     MUL,
     DIV,
+    IGL,
 }
 
 impl From<u8> for OPCode{

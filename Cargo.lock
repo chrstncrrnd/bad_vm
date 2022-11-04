@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "shitty_vm"
+name = "bad_vm"
 version = "0.1.0"

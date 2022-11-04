@@ -93,13 +93,25 @@ impl VM {
         OPCode::from(opcode)
     }
 
+    pub fn print_registers(&self) {
+        println!("VM Registers:");
+        for i in 0..self.registers.len(){
+            print!("{i:^5}|");
+        }
+        println!("");
+        for val in self.registers{
+            print!("{val:^5}|");
+        }
+        println!("")
+    }
+
 }
 
 #[cfg(test)]
 mod tests{
     use super::*;
 
-    
+
     #[test]
     fn load_opcode() {
         let opcode: u8 = OPCode::into(OPCode::LOAD);
@@ -114,81 +126,68 @@ mod tests{
     }
 
     #[test]
-    fn add_opcode() {
+    fn add_sub_mul_div_opcode() {
         // load 69 into first register
         // load 15 into second register,
-        // add 69 and 15 and put it into output register
+        // opearate on both registers and store result in output register
 
         let opcode_load = OPCode::into(OPCode::LOAD);
         let opcode_add = OPCode::into(OPCode::ADD);
+        let opcode_sub = OPCode::into(OPCode::SUB);
+        let opcode_mul = OPCode::into(OPCode::MUL);
+        let opcode_div = OPCode::into(OPCode::DIV);
 
-        let first_num = 69;
+        let first_num = 60;
         let second_num = 15;
 
         let first_reg = 0;
         let second_reg = 1;
-        let output_reg = 2;
+        let output_reg_add = 2;
+        let output_reg_sub = 3;
+        let output_reg_mul = 4;
+        let output_reg_div = 5;
 
         let program: Vec<u8> = vec![
+            // load first number
             opcode_load,
             first_reg,
             0,      // <- needs a 0 because 16 bit number
             first_num,
+            // load second number
             opcode_load,
             second_reg,
             0,
             second_num,
+            // add and store
             opcode_add,
             first_reg,
             second_reg,
-            output_reg
+            output_reg_add,
+            // sub and store
+            opcode_sub,
+            first_reg,
+            second_reg,
+            output_reg_sub,
+            // mul and store
+            opcode_mul,
+            first_reg,
+            second_reg,
+            output_reg_mul,
+            // div and store
+            opcode_div,
+            first_reg,
+            second_reg,
+            output_reg_div
         ];
 
         let mut vm = VM::new_with_program(program);
 
         vm.run();
 
-        assert_eq!(vm.registers[output_reg as usize], (first_num + second_num) as i32);
-
-    }
-
-
-    #[test]
-    fn sub_opcode() {
-        // load 69 into first register
-        // load 15 into second register,
-        // sub 69 from 15 and put it into output register
-
-        let opcode_load = OPCode::into(OPCode::LOAD);
-        let opcode_add = OPCode::into(OPCode::SUB);
-
-        let first_num = 69;
-        let second_num = 15;
-
-        let first_reg = 0;
-        let second_reg = 1;
-        let output_reg = 2;
-
-        let program: Vec<u8> = vec![
-            opcode_load,
-            first_reg,
-            0,      // <- needs a 0 because 16 bit number
-            first_num,
-            opcode_load,
-            second_reg,
-            0,
-            second_num,
-            opcode_add,
-            first_reg,
-            second_reg,
-            output_reg
-        ];
-
-        let mut vm = VM::new_with_program(program);
-
-        vm.run();
-
-        assert_eq!(vm.registers[output_reg as usize], (first_num - second_num) as i32);
+        assert_eq!(vm.registers[output_reg_add as usize], (first_num + second_num) as i32);
+        assert_eq!(vm.registers[output_reg_sub as usize], (first_num - second_num) as i32);
+        assert_eq!(vm.registers[output_reg_mul as usize], first_num as i32 * second_num as i32);
+        assert_eq!(vm.registers[output_reg_div as usize], (first_num / second_num) as i32);
 
     }
 }
