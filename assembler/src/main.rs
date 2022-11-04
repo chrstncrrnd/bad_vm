@@ -15,6 +15,15 @@ fn main() {
 
     file.read_to_string(&mut input).unwrap();
     
+    let program = parse_program(input);
+   
+    let mut output_file = File::create(args[2].clone()).unwrap();
+    output_file.write(&program).unwrap();
+
+}
+
+
+pub fn parse_program(input: String) -> Vec<u8>{
     let instructions = input.trim().split("\n").collect::<Vec<&str>>();
 
     let mut program = Vec::<u8>::new();
@@ -24,7 +33,7 @@ fn main() {
         if i.trim().is_empty() || i.starts_with(";"){
             continue;
         }
-        let instruction = i.split(" ").map(|s| s.trim()).collect::<Vec<&str>>();
+        let instruction = i.split(" ").map(|s| s.trim()).filter(|s| !s.is_empty()).collect::<Vec<&str>>();
         match instruction[0]{
             "HALT" => {
                 program.push(0)
@@ -63,11 +72,76 @@ fn main() {
                 program.push(instruction[3].parse().unwrap());
             },
             _ => {
-                println!("Unknown opcode mneumonic: {}", instruction[0]);
+                panic!("Unknown opcode mneumonic: {:?}", instruction[0]);
             }
         }
     }
-    let mut output_file = File::create(args[2].clone()).unwrap();
-    output_file.write(&program).unwrap();
+
+    program
+
+}
+
+#[cfg(test)]
+mod tests{
+    use std::vec;
+
+
+    #[test]
+    fn test_halt(){
+        let input = String::from("HALT");
+        let program = crate::parse_program(input);
+        assert_eq!(vec![0_u8], program)
+    }
+
+    #[test]
+    fn test_load() {
+        let input = String::from("LOAD 0 100");
+        let program = crate::parse_program(input);
+        assert_eq!(vec![1, 0, 0, 100], program);
+    } 
+
+    #[test]
+    fn test_add() {
+        let input = String::from(r#"
+        LOAD 0 100
+        LOAD 1 200
+        ADD 0 1 2
+        "#);
+        let program = crate::parse_program(input);
+        assert_eq!(vec![1, 0, 0, 100, 1, 1, 0, 200, 2, 0, 1, 2], program);
+    }
+
+    #[test]
+    fn test_sub() {
+        let input = String::from(r#"
+        LOAD 0 100
+        LOAD 1 200
+        SUB 0 1 2
+        "#);
+        let program = crate::parse_program(input);
+        assert_eq!(vec![1, 0, 0, 100, 1, 1, 0, 200, 3, 0, 1, 2], program);
+    } 
+
+    #[test]
+    fn test_mul() {
+        let input = String::from(r#"
+        LOAD 0 100
+        LOAD 1 200
+        MUL 0 1 2
+        "#);
+        let program = crate::parse_program(input);
+        assert_eq!(vec![1, 0, 0, 100, 1, 1, 0, 200, 4, 0, 1, 2], program);
+    } 
+
+    #[test]
+    fn test_div() {
+        let input = String::from(r#"
+        LOAD 0 100
+        LOAD 1 200
+        DIV 0 1 2
+        "#);
+        let program = crate::parse_program(input);
+        assert_eq!(vec![1, 0, 0, 100, 1, 1, 0, 200, 5, 0, 1, 2], program);
+    } 
 
 }
