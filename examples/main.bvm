@@ -1,5 +1,5 @@
 ; example program
-; adds 69 to 420 and stores result in register 3
+; adds 69 to 420 and stores result in register 2
 LOAD 0 69
 LOAD 1 420
 ADD 0 1 2
