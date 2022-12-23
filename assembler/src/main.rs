@@ -6,7 +6,7 @@ fn main() {
 
     if args.len() != 3{
         println!("Incorrect number of arguments");
-        println!("Usage: assembler <input_file> <output_file");
+        println!("Usage: assembler <input_file> <output_file>");
         return;
     }
 
